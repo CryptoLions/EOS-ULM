@@ -1,5 +1,5 @@
 {
-  "name": "eos-login",
+  "name": "eos-ulm-test-wrapper",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
