@@ -1,0 +1,33 @@
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { LoginEOSService } from './login-eos.service';
+
+@Component({
+  selector: 'app-login-eos',
+  template: `
+  		<ngx-toasta></ngx-toasta>
+  		<div id="popup-window">
+				<div class="popup-container">
+						<div class="popup-header">
+								Connect To Wallet
+  						</div>
+						<div class="login-wallet login-scatter" (click)="loginEOSService.initScatter()">
+								<div class="login-wallet-logo"><img width="100" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48c3ZnIHZlcnNpb249IjEuMSIgaWQ9ItCh0LvQvtC5XzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMjQwIDI0MCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjQwIDI0MDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+LnN0MHtmaWxsOiM2MkQwRkQ7fS5zdDF7ZmlsbDojRkZGRkZGO308L3N0eWxlPjx0aXRsZT5zY2F0dGVyX2JhZGdlX3RyYW5zcGFyZW50PC90aXRsZT48ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz48ZyBpZD0ic2NhdHRlcl9iYWRnZV90cmFuc3BhcmVudCI+PGcgaWQ9Ikdyb3VwIj48ZyBpZD0iSWNvbiI+PGNpcmNsZSBpZD0iQmFzZSIgY2xhc3M9InN0MCIgY3g9IjEyMCIgY3k9IjEyNC4xIiByPSIxMDEuMyIvPjwvZz48cGF0aCBpZD0iU2NhdHRlciIgY2xhc3M9InN0MSIgZD0iTTExMi42LDE4OC4xYy0zLjUsMC02LjQtMC40LTguNy0xLjJjLTIuMy0wLjgtNC4yLTEuNy01LjUtMi42Yy0xLjQtMS0yLjMtMS45LTIuOC0yLjhjLTAuNS0wLjktMC44LTEuNS0wLjgtMS44YzAtMSwwLjItMiwwLjYtMy4xYzAuNC0xLjEsMS0yLjEsMS42LTMuMWMwLjYtMSwxLjMtMS44LDIuMS0yLjRzMS40LTEsMi0xYzAuOCwwLDEuNCwwLjUsMS45LDEuNWwwLjgsMC44YzAuNCwwLjQsMSwwLjksMS44LDEuM3MxLjgsMC45LDIuOSwxLjNjMS4yLDAuNCwyLjUsMC42LDQuMSwwLjZjMy40LDAsNi4yLTEsOC4zLTMuMWMyLjItMi4xLDMuMi00LjksMy4yLTguNWMwLTIuNS0wLjYtNC43LTEuNy02LjdjLTEuMi0yLTIuNy0zLjgtNC42LTUuNXMtNC0zLjMtNi41LTQuOWMtMi40LTEuNi00LjktMy4zLTcuNS01cy01LTMuNi03LjUtNS42Yy0yLjQtMi00LjYtNC4zLTYuNS02LjljLTEuOS0yLjYtMy40LTUuNi00LjYtOC44Yy0xLjItMy4zLTEuNy03LjEtMS43LTExLjNjMC0zLjYsMC42LTcuMywxLjktMTFjMS4yLTMuNywzLTcuMiw1LjEtMTAuNmMyLjItMy4zLDQuOC02LjUsNy43LTkuNGMzLTIuOSw2LjItNS40LDkuNi03LjZjMy41LTIuMSw3LjEtMy44LDEwLjgtNS4xYzMuOC0xLjIsNy41LTEuOCwxMS4zLTEuOGMzLjIsMCw2LjIsMC41LDguNywxLjVjMi42LDEsNC44LDIuNSw2LjYsNC40YzEuOCwxLjksMy4yLDQuMSw0LjEsNi44YzEsMi42LDEuNSw1LjYsMS41LDguOGMwLDMuMS0wLjUsNi4xLTEuNiw5LjFjLTEuMSwzLTIuNSw1LjgtNC4zLDguNWMtMS44LDIuNy0zLjgsNS4xLTYsNy40Yy0yLjIsMi4zLTQuNSw0LjItNi45LDUuOWMtMi4zLDEuNy00LjYsMi45LTYuOCwzLjljLTIuMiwwLjktNC4yLDEuNC01LjgsMS40Yy0xLjUsMC0yLjgtMC4zLTMuOS0xcy0yLjEtMS41LTIuOS0yLjVzLTEuNC0yLjEtMS44LTMuMmMtMC40LTEuMS0wLjYtMi4xLTAuNi0zYzAtMC43LDAuMS0xLjIsMC4zLTEuNGMwLjItMC4yLDAuNS0wLjMsMC44LTAuM2MwLjQsMCwwLjgsMC4xLDEuMywwLjJjMC41LDAuMSwxLjIsMC4yLDEuOSwwLjJjMi4zLDAsNC44LTAuOCw3LjUtMi40YzIuOC0xLjYsNS4zLTMuNiw3LjgtNmMyLjQtMi40LDQuNS01LjEsNi4xLTguMWMxLjYtMi45LDIuNS01LjgsMi41LTguNmMwLTIuOC0wLjctNS4xLTIuMS02LjdjLTEuNC0xLjYtMy43LTIuNC03LTIuNGMtMi4xLDAtNC4zLDAuNC02LjcsMS4yYy0yLjQsMC44LTQuOCwxLjktNy4yLDMuM2MtMi40LDEuNC00LjgsMy4xLTcsNS4xYy0yLjMsMi00LjMsNC4yLTYsNi42Yy0xLjcsMi40LTMuMSw1LTQuMiw3LjhzLTEuNiw1LjctMS42LDguOGMwLDMuMiwwLjYsNi4xLDEuNyw4LjZjMS4yLDIuNSwyLjcsNC44LDQuNiw2LjljMS45LDIuMSw0LjEsNCw2LjUsNS43YzIuNCwxLjcsNC45LDMuNSw3LjUsNS4yYzIuNSwxLjcsNSwzLjUsNy41LDUuM2MyLjQsMS44LDQuNiwzLjgsNi41LDZjMS45LDIuMiwzLjUsNC42LDQuNiw3LjNzMS43LDUuOCwxLjcsOS4zYzAsMy40LTAuNiw2LjYtMS45LDkuNmMtMS4zLDMtMyw1LjYtNS4yLDcuOWMtMi4yLDIuMi00LjgsNC03LjksNS4zUzExNi4xLDE4OC4xLDExMi42LDE4OC4xeiIvPjwvZz48L2c+PC9zdmc+" alt="" /></div>
+								<div class="login-wallet-header">Scatter</div>
+								<div class="login-wallet-text">Use Scatter Chrome or Desktop to access wallet.</div>
+						</div>
+				</div>
+  		</div>
+  `,
+  styleUrls: ['./popup.css', '../../node_modules/ngx-toasta/styles/style-material.css'],
+  encapsulation: ViewEncapsulation.None
+})
+export class LoginEOSComponent implements OnInit {
+	
+	constructor(public loginEOSService: LoginEOSService){}
+
+	ngOnInit(){
+	  if (this.loginEOSService.connected) {
+           this.loginEOSService.initScatter();
+      }
+	}
+}
