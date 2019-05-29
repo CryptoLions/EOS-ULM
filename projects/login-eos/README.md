@@ -8,12 +8,12 @@ eosjs@16.0.9
 ```
 ## Installation
 ```
-npm i --save login-eos
+npm i --save eos-ulm
 ```
 
-## Patch for scatter compatible with angular apps
+## Patch for scatter libs compatible with your angular app
 ```
-// /patch.js
+// put the code below in patch.js in root of your project and (node patch.js)
 const fs = require('fs');
 const f = 'node_modules/@angular-devkit/build-angular/src/angular-cli-files/models/webpack-configs/browser.js';
 
@@ -70,9 +70,9 @@ export class LoginComponent {
 ```
 ### login.component.html
 ```
-// example of login button 
+// example of login/logout button 
  <a class="" (click)="loginEOSService.openPopup()" *ngIf="!loginEOSService.connected">Login</a>
- <a class="" (click)="loginEOSService.openPopup()" *ngIf="loginEOSService.connected">Logout</a>  
+ <a class="" (click)="loginEOSService.logout()" *ngIf="loginEOSService.connected">Logout</a>  
 ```
 
 ## Events

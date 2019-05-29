@@ -4,9 +4,10 @@ import { configInterface, configNetworkService } from './login-config.service';
 
 import ScatterJS from 'scatterjs-core';
 import ScatterEOS from 'scatterjs-plugin-eosjs';
+import ScatterLynx from 'scatterjs-plugin-lynx';
 import Eos from 'eosjs';
 
-ScatterJS.plugins( new ScatterEOS() );
+ScatterJS.plugins( new ScatterEOS(), new ScatterLynx(Eos) );
 
 @Injectable({
   providedIn: 'root'
@@ -42,6 +43,38 @@ export class LoginEOSService {
   }
 
   initScatter() {
+    this.ScatterJS.connect(this.config.appName, { network: this.network }).then(connected => {
+      if (!connected) {
+          if (this.initCounterErr < 2){
+              this.initCounterErr += 1;
+              return this.initScatter();
+          }
+          return this.showScatterError('Can\'t connect to Scatter');
+      }
+      this.eos = this.ScatterJS.eos(this.network, Eos);
+
+      this.ScatterJS.login().then(id => {
+              if(!id) return console.error('no identity');
+              
+              let account = ScatterJS.account('eos'); 
+              this.accountName = account.name;
+              this.options = {authorization:[`${account.name}@${account.authority}`]};
+
+              localStorage.setItem('wallet', 'connected');
+              localStorage.setItem('account', this.accountName);
+      
+              this.loggedIn.emit(true);
+              this.connected = true;
+              this.closePopUp();
+              this.showMessage(`Hi ${this.accountName} :)`);
+
+      }).catch(error => this.showScatterError(error));
+    }).catch(error => {
+        this.showScatterError(error);
+    });
+  }
+
+  initLynx() {
     this.ScatterJS.connect(this.config.appName, { network: this.network }).then(connected => {
       if (!connected) {
           if (this.initCounterErr < 2){
