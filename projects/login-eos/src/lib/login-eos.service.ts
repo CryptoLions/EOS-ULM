@@ -14,12 +14,14 @@ ScatterJS.plugins( new ScatterEOS(), new ScatterLynx(Eos) );
 })
 export class LoginEOSService {
   
-  connected = (localStorage.getItem('wallet') === 'connected') ? true : false; 
+  WINDOW: any = window;
+  connected = (localStorage.getItem('walletConnected') === 'connected') ? true : false;
+  eosioWalletType = localStorage.getItem('eosioWalletType') || 'scatter'; 
   eosConf = {
         httpEndpoint: this.config.httpEndpoint,
         chainId: this.config.chain,
         verbose: this.config.verbose
-  }
+  };
   network = ScatterJS.Network.fromJson({
         blockchain: this.config.blockchain,
         host: this.config.host,
@@ -34,6 +36,7 @@ export class LoginEOSService {
   accountName: any;
   options: any;
   initCounterErr = 0;
+  eosTock: any;
 
   constructor(private toastyService: ToastaService,
               private toastyConfig: ToastaConfig,
@@ -60,8 +63,8 @@ export class LoginEOSService {
               this.accountName = account.name;
               this.options = {authorization:[`${account.name}@${account.authority}`]};
 
-              localStorage.setItem('wallet', 'connected');
-              localStorage.setItem('account', this.accountName);
+              localStorage.setItem('walletConnected', 'connected');
+              localStorage.setItem('eosioWalletType', 'scatter');
       
               this.loggedIn.emit(true);
               this.connected = true;
@@ -74,36 +77,27 @@ export class LoginEOSService {
     });
   }
 
-  initLynx() {
-    this.ScatterJS.connect(this.config.appName, { network: this.network }).then(connected => {
-      if (!connected) {
-          if (this.initCounterErr < 2){
-              this.initCounterErr += 1;
-              return this.initScatter();
-          }
-          return this.showScatterError('Can\'t connect to Scatter');
-      }
-      this.eos = this.ScatterJS.eos(this.network, Eos);
+  initEostock() {
+      this.WINDOW.eosTock.login([this.eosConf]).then(identity => {
+            if(!identity) return console.error('no identity');
+            this.eosTock = this.WINDOW.eosTock;
+            this.WINDOW.eosTock = null; 
 
-      this.ScatterJS.login().then(id => {
-              if(!id) return console.error('no identity');
-              
-              let account = ScatterJS.account('eos'); 
-              this.accountName = account.name;
-              this.options = {authorization:[`${account.name}@${account.authority}`]};
+            this.eos = this.eosTock.eos(this.eosConf, Eos);
+            
+            this.accountName = identity.account;
+            this.options = {authorization:[`${this.accountName}@active`]};
 
-              localStorage.setItem('wallet', 'connected');
-              localStorage.setItem('account', this.accountName);
+            localStorage.setItem('walletConnected', 'connected');
+            localStorage.setItem('eosioWalletType', 'eostock');
       
-              this.loggedIn.emit(true);
-              this.connected = true;
-              this.closePopUp();
-              this.showMessage(`Hi ${this.accountName} :)`);
-
-      }).catch(error => this.showScatterError(error));
-    }).catch(error => {
-        this.showScatterError(error);
-    });
+            this.loggedIn.emit(true);
+            this.connected = true;
+            this.closePopUp();
+            this.showMessage(`Hi ${this.accountName} :)`);
+      }).catch(error => {
+          this.showScatterError(error);
+      });
   }
 
   openPopup(){
@@ -195,13 +189,21 @@ export class LoginEOSService {
   }
 
   logout() {
-    this.ScatterJS.forgetIdentity().then(() => {
-          localStorage.setItem('account', '');
-          localStorage.setItem('wallet', 'disconnect');
+    if (this.eosioWalletType === 'scatter'){
+        this.ScatterJS.forgetIdentity().then(() => {
+            localStorage.setItem('walletConnected', 'disconnect');
+            location.href = '/';
+        }).catch(err => {
+            this.showScatterError(err);
+        });
+    } else if (this.eosioWalletType === 'eostock'){
+       this.eosTock.logout().then(() => {
+          localStorage.setItem('walletConnected', 'disconnect');
           location.href = '/';
-    }).catch(err => {
-          console.error(err);
-    });
+       }).catch(err => {
+          this.showScatterError(err);
+       });
+    }
   }
 
 // ==== service end

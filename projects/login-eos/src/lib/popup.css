@@ -20,6 +20,7 @@
     position: absolute;
 	top: 50%;
     left: 50%;
+    width: 600px;
     margin-right: -50%;
     transform: translate(-50%, -50%)
 }
@@ -36,11 +37,11 @@
 	border-radius: 4px;
 	padding: 10px 15px;
 	display: table;
-	width: 50%;
+	width: 45%;
 	margin: 25px auto 10px auto;
 	text-align: center;
 	cursor: pointer;
-	min-height: 140px;
+	min-height: 230px;
 }
 .login-wallet:hover{
 	background: #00adff;
@@ -55,3 +56,40 @@
 	margin-top: 5px;
 	font-size: 13px;
 }
+.login-wallet-others{
+	margin-top: 10px;
+	font-size: 13px;
+}
+.login-wallet-others img{
+	margin-left: 5px;
+	margin-top: 5px;
+}
+.login-wallet-others img:first-child{
+	margin-left: 0;
+}
+.login-eostock{
+	vertical-align: middle;
+}
+.login-eostock .login-wallet-logo{
+	margin-top: 25px;
+}
+
+@media only screen and (max-width: 600px)  {
+	.popup-container{
+		width: 80%;
+	}
+	.popup-content{
+		display: block;
+	}
+	.login-wallet{
+		min-height: auto;
+		width: 80%;
+	}
+	.login-eostock .login-wallet-logo{
+		margin-top: 10px;
+	}
+}
+
+
+
+

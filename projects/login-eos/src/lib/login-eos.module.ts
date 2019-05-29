@@ -3,13 +3,15 @@ import { LoginEOSService } from './login-eos.service';
 import { configInterface, configNetworkService } from './login-config.service';
 import { LoginEOSComponent } from './login-eos.component';
 import { ToastaModule } from 'ngx-toasta';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
 	declarations: [
 		LoginEOSComponent
 	],
 	imports: [
-		ToastaModule.forRoot()
+		ToastaModule.forRoot(),
+		CommonModule
 	],
 	exports: [LoginEOSComponent],
 	bootstrap: [LoginEOSComponent]
