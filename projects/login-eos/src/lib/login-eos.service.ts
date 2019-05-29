@@ -64,7 +64,8 @@ export class LoginEOSService {
               this.options = {authorization:[`${account.name}@${account.authority}`]};
 
               localStorage.setItem('walletConnected', 'connected');
-              localStorage.setItem('eosioWalletType', 'scatter');
+              this.eosioWalletType = 'scatter';
+              localStorage.setItem('eosioWalletType', this.eosioWalletType);
       
               this.loggedIn.emit(true);
               this.connected = true;
@@ -89,7 +90,8 @@ export class LoginEOSService {
             this.options = {authorization:[`${this.accountName}@active`]};
 
             localStorage.setItem('walletConnected', 'connected');
-            localStorage.setItem('eosioWalletType', 'eostock');
+            this.eosioWalletType = 'eostock';
+            localStorage.setItem('eosioWalletType', this.eosioWalletType);
       
             this.loggedIn.emit(true);
             this.connected = true;
