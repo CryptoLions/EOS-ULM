@@ -1,4 +1,7 @@
 <button class="btn-login" (click)="loginEOSService.openPopup()" *ngIf="!loginEOSService.connected">login</button>
 <button class="btn-login" (click)="loginEOSService.logout()" *ngIf="loginEOSService.connected">logout</button>
+
+{{ loginEOSService.accountName }}
+
 <app-login-eos></app-login-eos>
 

@@ -50,9 +50,13 @@ export class LoginEOSComponent implements OnInit {
 	  	  if (this.loginEOSService.eosioWalletType === 'scatter'){
 	  	  	  this.loginEOSService.initScatter();
 	  	  } else if (this.loginEOSService.eosioWalletType === 'eostock'){
-			  document.addEventListener('EOSTOCK_CONNECTED', () => {
+			  if (!(<any>window).eosTock){
+			  	document.addEventListener('EOSTOCK_CONNECTED', () => {
 			  		this.loginEOSService.initEostock();
-			  });
+			  	});
+			  	return;
+			  }
+			  this.loginEOSService.initEostock();
 	  	  }
       }
 	}
