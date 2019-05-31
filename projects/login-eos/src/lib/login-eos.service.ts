@@ -7,6 +7,8 @@ import ScatterEOS from 'scatterjs-plugin-eosjs';
 import ScatterLynx from 'scatterjs-plugin-lynx';
 import Eos from 'eosjs';
 
+//import { SignatureProvider } from 'eosjs-ledger-signature-provider';
+
 ScatterJS.plugins( new ScatterEOS(), new ScatterLynx(Eos) );
 
 @Injectable({
@@ -22,6 +24,7 @@ export class LoginEOSService {
         chainId: this.config.chain,
         verbose: this.config.verbose
   };
+  //signatureProvider = new SignatureProvider();
   network = ScatterJS.Network.fromJson({
         blockchain: this.config.blockchain,
         host: this.config.host,
@@ -54,10 +57,12 @@ export class LoginEOSService {
           }
           return this.showScatterError('Can\'t connect to Scatter');
       }
-      this.eos = this.ScatterJS.eos(this.network, Eos);
+      this.eos = ScatterJS.eos(this.network, Eos);
 
       this.ScatterJS.login().then(id => {
-              if(!id) return console.error('no identity');
+              if(!id) {
+                return this.showScatterError('no identity');
+              };
               
               let account = ScatterJS.account('eos'); 
               this.accountName = account.name;
@@ -71,7 +76,6 @@ export class LoginEOSService {
               this.connected = true;
               this.closePopUp();
               this.showMessage(`Hi ${this.accountName} :)`);
-
       }).catch(error => this.showScatterError(error));
     }).catch(error => {
         this.showScatterError(error);
@@ -80,7 +84,9 @@ export class LoginEOSService {
 
   initEostock() {
       this.WINDOW.eosTock.login([this.eosConf]).then(identity => {
-            if(!identity) return console.error('no identity');
+            if(!identity) {
+                return this.showScatterError('no identity');
+            };
             this.eosTock = this.WINDOW.eosTock;
             this.WINDOW.eosTock = null; 
 
@@ -101,6 +107,15 @@ export class LoginEOSService {
           this.showScatterError(error);
       });
   }
+
+  /*initLedger() {
+       this.signatureProvider.getAvailableKeys()
+          .then((result) => {
+                console.log(result);
+          }).catch((error) => {
+                console.info('Error: ', error);
+          });
+  }*/
 
   openPopup(){
       let popup = document.getElementById('popup-window');
