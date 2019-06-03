@@ -5,6 +5,7 @@ import { LoginEOSComponent } from './login-eos.component';
 import { ToastaModule } from 'ngx-toasta';
 import { CommonModule } from '@angular/common';
 
+
 @NgModule({
 	declarations: [
 		LoginEOSComponent

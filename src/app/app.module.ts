@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { LoginEOSModule } from '../../projects/login-eos/src/lib/login-eos.module'; 
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -10,6 +11,7 @@ import { LoginEOSModule } from '../../projects/login-eos/src/lib/login-eos.modul
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     LoginEOSModule.forRoot({
     	appName: 'test',
     	httpEndpoint: 'https://bp.cryptolions.io',

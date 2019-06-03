@@ -9,8 +9,6 @@ import Eos from 'eosjs';
 
 //import { SignatureProvider } from 'eosjs-ledger-signature-provider';
 
-ScatterJS.plugins( new ScatterEOS(), new ScatterLynx(Eos) );
-
 @Injectable({
   providedIn: 'root'
 })
@@ -40,30 +38,35 @@ export class LoginEOSService {
   options: any;
   initCounterErr = 0;
   eosTock: any;
+  inProgress = false;
 
   constructor(private toastyService: ToastaService,
               private toastyConfig: ToastaConfig,
               @Inject(configNetworkService) private config) {
      this.toastyConfig.position = 'top-center';
      this.toastyConfig.theme = 'material';
+     this.ScatterJS.plugins( new ScatterEOS(), new ScatterLynx(Eos) );
   }
 
   initScatter() {
+    this.inProgress = true;
     this.ScatterJS.connect(this.config.appName, { network: this.network }).then(connected => {
       if (!connected) {
           if (this.initCounterErr < 2){
               this.initCounterErr += 1;
               return this.initScatter();
           }
+          this.inProgress = false;
           return this.showScatterError('Can\'t connect to Scatter');
       }
-      this.eos = ScatterJS.eos(this.network, Eos);
+      this.eos = this.ScatterJS.eos(this.network, Eos);
 
       this.ScatterJS.login().then(id => {
+              this.inProgress = false;
               if(!id) {
                 return this.showScatterError('no identity');
               };
-              
+
               let account = ScatterJS.account('eos'); 
               this.accountName = account.name;
               this.options = {authorization:[`${account.name}@${account.authority}`]};
@@ -76,13 +79,20 @@ export class LoginEOSService {
               this.connected = true;
               this.closePopUp();
               this.showMessage(`Hi ${this.accountName} :)`);
-      }).catch(error => this.showScatterError(error));
+      }).catch(error => {
+        this.inProgress = false;
+        this.showScatterError(error);
+      });
     }).catch(error => {
+        this.inProgress = false;
         this.showScatterError(error);
     });
   }
 
   initEostock() {
+      if (!this.WINDOW.eosTock) {
+          return this.showScatterError('Can\'t connect to EOStock');
+      }
       this.WINDOW.eosTock.login([this.eosConf]).then(identity => {
             if(!identity) {
                 return this.showScatterError('no identity');
@@ -135,8 +145,9 @@ export class LoginEOSService {
   showScatterError(error) {
     if (!error) { return; }
     let msg = error.message;
-    if (error.type === 'identity_rejected'){
-        location.reload();
+    console.log('Scatter error type - ', error.type);
+    if ( (error.type === 'identity_rejected' || error.type === 'locked') && !this.connected ){
+          location.reload();
     }
     const toastOption: ToastOptions = {
          title: 'Error',
