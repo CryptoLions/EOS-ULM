@@ -220,14 +220,14 @@ export class LoginEOSService {
     if (this.eosioWalletType === 'scatter'){
         this.ScatterJS.forgetIdentity().then(() => {
             localStorage.setItem('walletConnected', 'disconnect');
-            location.href = '/';
+            location.reload();
         }).catch(err => {
             this.showScatterError(err);
         });
     } else if (this.eosioWalletType === 'eostock'){
        this.eosTock.logout().then(() => {
           localStorage.setItem('walletConnected', 'disconnect');
-          location.href = '/';
+          location.reload();
        }).catch(err => {
           this.showScatterError(err);
        });

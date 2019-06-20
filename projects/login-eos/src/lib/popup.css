@@ -5,41 +5,39 @@
 	background: rgba(0,0,0,.4);
 	z-index: 1000;
 	left: 0;
-    top: 0;
-    font-family: 'Helvetica', sans-serif, arial;
-    color: #000;
-    visibility: hidden;
-  	opacity: 0;
-  	transition: opacity 0.3s ease-in;
+  top: 0;
+  font-family: 'Helvetica', sans-serif, arial;
+  color: #000;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
 }
 .popup-window-visible{
 	visibility: visible !important;
-  	opacity:1 !important;
+  opacity:1 !important;
 }
 .popup-container{
-    padding: 24px;
+    padding: 14px 24px 24px 24px;
     position: absolute;
-	top: 50%;
+	  top: 50%;
     left: 50%;
     width: 410px;
     margin-right: -50%;
     transform: translate(-50%, -50%);
+    background: #fff;
 }
 .popup-header{
 	display: flex;
 	justify-content: space-between;
-	margin-bottom: 25px;
+	margin-bottom: 15px;
 }
 .popup-header-text{
-	font-size: 16px;
-    background: #fff;
+	  font-size: 16px;
     display: table;
-    padding: 8px 20px;
+    padding: 8px 0;
     font-weight: bold;
 }
 .popup-close-icon{
-    background: #fff;
-    padding: 0px 12px;
     font-size: 24px;
     cursor: pointer;
 }
@@ -47,7 +45,7 @@
 	color: #9c9c9c;
 }
 .login-wallet{
-	background: #fff;
+	border: 1px solid #f9f9f9;
 	padding: 20px 20px 17px;
 	display: flex;
 	margin-top: 15px;
