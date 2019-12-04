@@ -39,7 +39,6 @@ export class LoginEOSService {
   initCounterErr = 0;
   eosTock: any;
   inProgress = false;
-  accountInfo: any;
 
   constructor(private toastyService: ToastaService,
               private toastyConfig: ToastaConfig,
@@ -70,7 +69,6 @@ export class LoginEOSService {
 
               let account = ScatterJS.account('eos'); 
               this.accountName = account.name;
-              this.accountInfo = account;
               this.options = {authorization:[`${account.name}@${account.authority}`]};
 
               localStorage.setItem('walletConnected', 'connected');
@@ -118,9 +116,6 @@ export class LoginEOSService {
       }).catch(error => {
           this.showScatterError(error);
       });
-  }
-  initLYNX(data){
-      this.WINDOW.location.href = "https://magic.lynxwallet.io/8epm";
   }
 
   /*initLedger() {
