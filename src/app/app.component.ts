@@ -20,15 +20,15 @@ export class AppComponent implements OnInit {
                               table_key: "string",
                               upper_bound: "-1"
                           }).then(res => console.log(res));*/
-			/*this.loginEOSService.eos.contract('simpleassets', {
+			    this.loginEOSService.eos.contract('simpleassets', {
         	    accounts: [this.loginEOSService.network]
         	}).then(contract => {
         		console.log(contract);
-        	    contract.transferf(".3cae.waa", 'simplemarket', 'ilovekolobok', "10.00000000 WAX", 'memo test', this.loginEOSService.options)
+        	    contract.transfer(".3cae.wam", 'simplemarket', 'ilovekolobok', "10.00000000 WAX", 'memo test', this.loginEOSService.options)
         	            .then(result => console.log(result))
         	}).catch(err => {
         		console.error(err);
-        	});*/
+        	});
 		});
 	}
 

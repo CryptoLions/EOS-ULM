@@ -45,7 +45,7 @@ export class LoginEOSService {
 
   constructor(private toastyService: ToastaService,
               private toastyConfig: ToastaConfig,
-              @Inject(configNetworkService) private config) {
+              @Inject(configNetworkService) public config) {
      this.toastyConfig.position = 'top-center';
      this.toastyConfig.theme = 'material';
      this.ScatterJS.plugins( new ScatterEOS(), new ScatterLynx(Eos) );
@@ -170,7 +170,28 @@ export class LoginEOSService {
                 }).catch(err => reject(err));
         });
       };
-      
+      this.eos['transfer'] = (from, to, quantity, memo) => {
+          return wax.api.transact({
+            actions: [{
+              account: 'eosio.token',
+              name: 'transfer',
+              authorization: [{
+                actor: this.accountName,
+                permission: 'active',
+              }],
+              data : {
+                from,
+                to,
+                quantity,
+                memo
+              }
+            }]
+          }, {
+            blocksBehind: 3,
+            expireSeconds: 30
+          });
+      };
+
       this.options = {authorization:[`${this.accountName}@active`]};
 
       localStorage.setItem('walletConnected', 'connected');
