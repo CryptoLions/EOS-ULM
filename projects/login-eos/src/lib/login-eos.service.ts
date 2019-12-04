@@ -7,6 +7,8 @@ import ScatterEOS from 'scatterjs-plugin-eosjs';
 import ScatterLynx from 'scatterjs-plugin-lynx';
 import Eos from 'eosjs';
 
+import * as waxjs from "@waxio/waxjs/dist";
+
 //import { SignatureProvider } from 'eosjs-ledger-signature-provider';
 
 @Injectable({
@@ -31,7 +33,8 @@ export class LoginEOSService {
         expireInSeconds: this.config,
         chainId: this.config.chain
   });
-  eos: any       = Eos(this.eosConf);
+  eos: any          = Eos(this.eosConf);
+  waxRPC: any       = Eos(this.eosConf);
   ScatterJS: any = ScatterJS;
   loggedIn: any  = new EventEmitter<boolean>();
   accountName: any;
@@ -117,6 +120,70 @@ export class LoginEOSService {
           this.showScatterError(error);
       });
   }
+
+  async initWAX(){
+      const wax :any     = new waxjs.WaxJS(this.config.httpEndpoint);
+
+      try {
+        this.accountName = await wax.login();
+      } catch(error) {
+        this.showScatterError(error);
+      }
+
+      this.eos['contract'] = (contractName, nets) => {
+        return new Promise((resolve, reject) => {
+            this.waxRPC.getAbi(contractName)
+                .then((res: any) => {
+                  let structs = {};
+                  res.abi.structs.forEach(elem => {
+                      structs[elem.name] = elem.fields;
+                  });
+                  
+                  this.waxRPC.contract(contractName, nets)
+                      .then(contract => {
+                        let contractMethods = {};
+                        Object.keys(contract).map((key) => {
+                             contractMethods[key] = (...args: any[]) => {
+                                 let data = {};
+                                 structs[key].forEach((elem, index) => {
+                                     data[elem.name] = args[index];
+                                 });
+                                 return wax.api.transact({
+                                   actions: [{
+                                     account: contractName,
+                                     name: key,
+                                     authorization: [{
+                                       actor: this.accountName,
+                                       permission: 'active',
+                                     }],
+                                     data,
+                                   }]
+                                 }, {
+                                   blocksBehind: 3,
+                                   expireSeconds: 30
+                                 });
+                             }  
+                        });
+                        resolve(contractMethods);
+                      }).catch(err => reject(err));
+
+                }).catch(err => reject(err));
+        });
+      };
+      
+      this.options = {authorization:[`${this.accountName}@active`]};
+
+      localStorage.setItem('walletConnected', 'connected');
+      this.eosioWalletType = 'wax';
+      localStorage.setItem('eosioWalletType', this.eosioWalletType);
+      
+      this.loggedIn.emit(true);
+      this.connected = true;
+      this.closePopUp();
+      this.showMessage(`Hi ${this.accountName} :)`);
+  }
+
+
 
   /*initLedger() {
        this.signatureProvider.getAvailableKeys()
@@ -231,6 +298,9 @@ export class LoginEOSService {
        }).catch(err => {
           this.showScatterError(err);
        });
+    }  else if (this.eosioWalletType === 'wax'){
+          localStorage.setItem('walletConnected', 'disconnect');
+          location.reload();
     }
   }
 
