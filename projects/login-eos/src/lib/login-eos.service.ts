@@ -191,7 +191,14 @@ export class LoginEOSService {
             expireSeconds: 30
           });
       };
-
+      this.eos['transaction'] = (actions) => {
+          return wax.api.transact({
+            actions
+          }, {
+            blocksBehind: 3,
+            expireSeconds: 30
+          });
+      };
       this.options = {authorization:[`${this.accountName}@active`]};
 
       localStorage.setItem('walletConnected', 'connected');
