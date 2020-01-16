@@ -42,6 +42,7 @@ export class LoginEOSService {
   initCounterErr = 0;
   eosTock: any;
   inProgress = false;
+  accountInfo: any;
 
   constructor(private toastyService: ToastaService,
               private toastyConfig: ToastaConfig,
@@ -72,6 +73,7 @@ export class LoginEOSService {
 
               let account = ScatterJS.account('eos'); 
               this.accountName = account.name;
+              this.accountInfo = account;
               this.options = {authorization:[`${account.name}@${account.authority}`]};
 
               localStorage.setItem('walletConnected', 'connected');
@@ -106,6 +108,7 @@ export class LoginEOSService {
             this.eos = this.eosTock.eos(this.eosConf, Eos);
             
             this.accountName = identity.account;
+            this.accountInfo = identity;
             this.options = {authorization:[`${this.accountName}@active`]};
 
             localStorage.setItem('walletConnected', 'connected');
