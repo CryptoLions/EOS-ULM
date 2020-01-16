@@ -128,7 +128,15 @@ export class LoginEOSService {
       const wax :any     = new waxjs.WaxJS(this.config.httpEndpoint);
 
       try {
-        this.accountName = await wax.login();
+        let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
+        if(isAutoLoginAvailable){
+            this.accountName = wax.userAccount;
+            this.accountInfo = wax;
+        } else {
+            this.accountName = await wax.login();
+            this.accountInfo = wax;
+        }
+        
       } catch(error) {
         this.showScatterError(error);
       }
@@ -241,19 +249,24 @@ export class LoginEOSService {
   }
 
   showScatterError(error) {
+    let toastOption: ToastOptions = {
+         title: 'Error',
+         msg: '',
+         showClose: true,
+         timeout: 3000,
+         theme: 'material'
+    };
     if (!error) { return; }
+    if(!error.message){
+      toastOption.msg = error
+      return this.toastyService.error(toastOption);
+    }
     let msg = error.message;
     console.log('Scatter error type - ', error.type);
     if ( (error.type === 'identity_rejected' || error.type === 'locked') && !this.connected ){
           location.reload();
     }
-    const toastOption: ToastOptions = {
-         title: 'Error',
-         msg: msg || error,
-         showClose: true,
-         timeout: 3000,
-         theme: 'material'
-    };
+    toastOption.msg = msg || error
     this.toastyService.error(toastOption);
   }
 

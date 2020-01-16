@@ -20,7 +20,7 @@ export class AppComponent implements OnInit {
                               table_key: "string",
                               upper_bound: "-1"
                           }).then(res => console.log(res));*/
-			    this.loginEOSService.eos.contract('simpleassets', {
+			    /*this.loginEOSService.eos.contract('simpleassets', {
         	    accounts: [this.loginEOSService.network]
         	}).then(contract => {
         		console.log(contract);
@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
         	            .then(result => console.log(result))
         	}).catch(err => {
         		console.error(err);
-        	});
+        	});*/
 		});
 	}
 
