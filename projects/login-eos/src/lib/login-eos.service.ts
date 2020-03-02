@@ -125,7 +125,7 @@ export class LoginEOSService {
   }
 
   async initWAX(){
-      const wax :any     = new waxjs.WaxJS(this.config.httpEndpoint);
+      const wax :any  = new waxjs.WaxJS(this.config.httpEndpoint);
 
       try {
         let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
@@ -202,7 +202,7 @@ export class LoginEOSService {
             expireSeconds: 30
           });
       };
-      this.eos['transaction'] = (actions) => {
+      this.eos['transaction'] = ({actions}) => {
           return wax.api.transact({
             actions
           }, {
