@@ -32,7 +32,7 @@ fs.readFile(f, 'utf8', function (err,data) {
 ## Usage
 ### app.module.ts
 ```
-import { LoginEOSModule } from 'login-eos';
+import { LoginEOSModule } from 'eos-ulm';
 
 ...
 // @NgModule config example
@@ -57,7 +57,7 @@ LoginEOSModule.forRoot({
 ### login.component.ts
 ```
 import { Component, OnInit } from '@angular/core';
-import { LoginEOSService } from 'login-eos';
+import { LoginEOSService } from 'eos-ulm';
 
 @Component({
   selector: 'login',
