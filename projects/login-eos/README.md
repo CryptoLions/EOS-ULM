@@ -8,7 +8,7 @@ eosjs@16.0.9
 ```
 ## Installation
 ```
-npm i --save eos-ulm
+npm i --save ulm-eosio
 ```
 
 ## Patch for scatter libs compatible with your angular app
@@ -32,7 +32,7 @@ fs.readFile(f, 'utf8', function (err,data) {
 ## Usage
 ### app.module.ts
 ```
-import { LoginEOSModule } from 'eos-ulm';
+import { LoginEOSModule } from 'ulm-eosio';
 
 ...
 // @NgModule config example
@@ -57,7 +57,7 @@ LoginEOSModule.forRoot({
 ### login.component.ts
 ```
 import { Component, OnInit } from '@angular/core';
-import { LoginEOSService } from 'eos-ulm';
+import { LoginEOSService } from 'ulm-eosio';
 
 @Component({
   selector: 'login',

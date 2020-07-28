@@ -1,14 +1,18 @@
 {
-  "name": "eos-ulm",
-  "version": "0.3.0",
+  "name": "@cryptolions/ulm-eosio",
+  "version": "0.0.7",
   "peerDependencies": {
     "@angular/common": "^7.1.0",
     "@angular/core": "^7.1.0"
   },
   "dependencies": {
     "@babel/runtime": "^7.4.5",
+    "@scatterjs/core": "^2.7.53",
+    "@scatterjs/eosjs2": "^1.5.35",
     "@waxio/waxjs": "0.0.11",
-    "eosjs": "^16.0.9",
+    "anchor-link": "^2.0.1",
+    "anchor-link-browser-transport": "^2.0.1",
+    "eosjs": "^20.0.0",
     "ngx-toasta": "^0.1.0",
     "scatterjs-core": "^2.7.18",
     "scatterjs-plugin-eosjs": "^1.5.1",

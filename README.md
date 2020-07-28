@@ -8,7 +8,7 @@ eosjs@16.0.9
 ```
 ## Installation
 ```
-npm i --save eos-ulm
+npm i --save ulm-eosio
 ```
 
 ## Patch for scatter libs compatible with your angular app
