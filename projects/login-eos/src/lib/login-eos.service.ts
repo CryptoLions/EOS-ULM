@@ -229,6 +229,10 @@ export class LoginEOSService {
       this.showScatterError(error);
     }
 
+    if (!this.accountName) {
+      throw new Error('can’t get account name from wax cloud wallet');
+    }
+
     this.eos['transaction'] = ({ actions }) => {
       return wax.api.transact({
         actions
