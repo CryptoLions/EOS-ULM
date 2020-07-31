@@ -40,7 +40,7 @@ export class LoginEOSService {
 
   anchorLink: any;
   anchorLinkSession: any = LocalSessionStorage;
-  rpc: any = JsonRpc;
+  rpc: any = new JsonRpc(this.network.fullhost());
 
 
   eos: any;
@@ -216,7 +216,13 @@ export class LoginEOSService {
     // const waxRPC: any = ScatterJS.eos(this.network, Api, { rpc: this.rpc });
 
     try {
-      let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
+      let isAutoLoginAvailable
+      try {
+        isAutoLoginAvailable = await wax.isAutoLoginAvailable();
+      }
+      catch (error) {
+        console.log("error", error);
+      }
       if (isAutoLoginAvailable) {
         this.accountName = wax.userAccount;
         this.accountInfo = wax;
