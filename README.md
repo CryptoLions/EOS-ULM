@@ -4,11 +4,13 @@
 ```
 scatter-core
 scatterjs-plugin-eosjs
-eosjs@16.0.9
+eosjs@20.0.0
+@waxio/waxjs@0.0.11
+anchor-link@2.0.1
 ```
 ## Installation
 ```
-npm i --save ulm-eosio
+npm i --save @cryptolions/ulm-eosio
 ```
 
 ## Patch for scatter libs compatible with your angular app
@@ -32,13 +34,13 @@ fs.readFile(f, 'utf8', function (err,data) {
 ## Usage
 ### app.module.ts
 ```
-import { LoginEOSModule } from 'login-eos';
+import { LoginEOSModule } from '@cryptolions/ulm-eosio';
 
 ...
 // @NgModule config example
 LoginEOSModule.forRoot({
           appName: 'your_app_name',
-          httpEndpoint: 'https://bp.cryptolions.io,
+          httpEndpoint: 'https://bp.cryptolions.io',
           chain: 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
           verbose: false,
           blockchain: 'eos',
@@ -57,7 +59,7 @@ LoginEOSModule.forRoot({
 ### login.component.ts
 ```
 import { Component, OnInit } from '@angular/core';
-import { LoginEOSService } from 'login-eos';
+import { LoginEOSService } from '@cryptolions/ulm-eosio';
 
 @Component({
   selector: 'login',
@@ -83,19 +85,28 @@ this.loginEOSService.loggedIn.subscribe(res => {
 });
 ```
 
-## Example of usage with contracts
+## Example of usage with transaction
 ```
-this.loginEOSService.eos.contract('your contract name', {
-    accounts: ['your network config']
-}).then(contract => {
-      contract['contract action name']('some data fields', this.loginEOSService.options)
-              .then((result: any) => {
-                   // do something
-              }).catch(err => {
-                   this.loginEOSService.contractError(err);
-              });
+this.loginEOSService.eos.transaction({
+      actions: [{ 'your actions' }]
+    }, {
+      blocksBehind: 'your blocksBehind',
+      expireSeconds: 'your expireSeconds',
+    }).then((result: any) => {
+      // do something
+    }).catch(err => {
+      this.loginEOSService.contractError(err);
+    });
+```
+
+## Example of usage with get_table_rows
+```
+this.loginEOSService.rpc.get_table_rows({
+  'your data'
+}).then((result: any) => {
+  // do something
 }).catch(err => {
-    this.loginEOSService.contractError(err);
+  this.loginEOSService.contractError(err);
 });
 ```
 
