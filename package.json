@@ -28,6 +28,8 @@
     "@scatterjs/core": "^2.7.53",
     "@scatterjs/eosjs2": "^1.5.35",
     "@waxio/waxjs": "0.0.13",
+    "anchor-link": "^2.1.2",
+    "anchor-link-browser-transport": "^2.1.1",
     "core-js": "^2.5.4",
     "eosjs": "^20.0.0",
     "http-server": "^0.12.3",

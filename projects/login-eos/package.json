@@ -1,6 +1,6 @@
 {
   "name": "@cryptolions/ulm-eosio",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "peerDependencies": {
     "@angular/common": "^7.1.0",
     "@angular/core": "^7.1.0"
@@ -10,8 +10,8 @@
     "@scatterjs/core": "^2.7.53",
     "@scatterjs/eosjs2": "^1.5.35",
     "@waxio/waxjs": "0.0.11",
-    "anchor-link": "^2.0.1",
-    "anchor-link-browser-transport": "^2.0.1",
+    "anchor-link": "^2.1.2",
+    "anchor-link-browser-transport": "^2.1.1",
     "eosjs": "^20.0.0",
     "ngx-toasta": "^0.1.0",
     "scatterjs-core": "^2.7.18",
