@@ -52,7 +52,7 @@ export class LoginEOSService {
   initCounterErr = 0;
   eosTock: any;
   inProgress = false;
-  accountInfo: any;
+  accountInfo = {};
 
   constructor(private toastyService: ToastaService,
     private toastyConfig: ToastaConfig,
@@ -84,6 +84,7 @@ export class LoginEOSService {
     if (session) {
       // if prior session found, establish various components to use it
       this.accountName = session.auth.actor;
+      this.accountInfo["publicKey"] = session.publicKey;
       this.options = { authorization: [`${session.auth.actor}@${session.auth.permission}`] };
       localStorage.setItem('walletConnected', 'connected');
       localStorage.setItem('eosioWalletType', this.eosioWalletType);
@@ -92,7 +93,8 @@ export class LoginEOSService {
       this.closePopUp();
     } else {
       // otherwise establish new session
-      let identity = await this.anchorLink.login("ulm-eosio")
+      let identity = await this.anchorLink.login("ulm-eosio");
+      this.accountInfo["publicKey"] = identity.signerKey;
       this.accountName = identity.signer.actor;
       this.options = { authorization: [`${identity.signer.actor}@${identity.signer.permission}`] };
       // set appropriate localstorage values for uml
@@ -107,12 +109,14 @@ export class LoginEOSService {
       this.closePopUp();
       this.showMessage(`Hi ${this.accountName} :)`);
     }
-    this.eos['transaction'] = ({ actions }) => {
+    this.eos['transaction'] = ({ actions }, broadcast: true, sign: false) => {
       return this.anchorLink.transact({
         actions
       }, {
         blocksBehind: 3,
-        expireSeconds: 30
+        expireSeconds: 30,
+        broadcast,
+        sign
       });
     };
 
@@ -143,7 +147,7 @@ export class LoginEOSService {
 
         let account = ScatterJS.account('eos');
         this.accountName = account.name;
-        this.accountInfo = account;
+        this.accountInfo["publicKey"] = account.publicKey;
         this.options = { authorization: [`${account.name}@${account.authority}`] };
 
         localStorage.setItem('walletConnected', 'connected');
@@ -154,12 +158,14 @@ export class LoginEOSService {
         this.connected = true;
         this.closePopUp();
         this.showMessage(`Hi ${this.accountName} :)`);
-        this.eos['transaction'] = ({ actions }) => {
+        this.eos['transaction'] = ({ actions }, broadcast: true, sign: false) => {
           return this.eos.transact({
             actions
           }, {
             blocksBehind: 3,
-            expireSeconds: 30
+            expireSeconds: 30,
+            broadcast,
+            sign
           });
         };
 
@@ -225,10 +231,10 @@ export class LoginEOSService {
       }
       if (isAutoLoginAvailable) {
         this.accountName = wax.userAccount;
-        this.accountInfo = wax;
+        this.accountInfo["publicKey"] = wax.pubKeys[0];
       } else {
         this.accountName = await wax.login();
-        this.accountInfo = wax;
+        this.accountInfo["publicKey"] = wax.pubKeys[0];
       }
 
     } catch (error) {
@@ -239,12 +245,14 @@ export class LoginEOSService {
       throw new Error('can’t get account name from wax cloud wallet');
     }
 
-    this.eos['transaction'] = ({ actions }) => {
+    this.eos['transaction'] = ({ actions }, broadcast: true, sign: false) => {
       return wax.api.transact({
         actions
       }, {
         blocksBehind: 3,
-        expireSeconds: 30
+        expireSeconds: 30,
+        broadcast,
+        sign
       });
     };
     this.options = { authorization: [`${this.accountName}@active`] };
