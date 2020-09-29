@@ -26,15 +26,17 @@ export class LoginEOSComponent implements OnInit {
 		if (this.loginEOSService.connected) {
 			if (this.loginEOSService.eosioWalletType === 'scatter') {
 				this.loginEOSService.initScatter(true);
-			} else if (this.loginEOSService.eosioWalletType === 'eostock') {
-				if (!(<any>window).eosTock) {
-					document.addEventListener('EOSTOCK_CONNECTED', () => {
-						this.loginEOSService.initEostock();
-					});
-					return;
-				}
-				this.loginEOSService.initEostock();
-			} else if (this.loginEOSService.eosioWalletType === 'wax') {
+			}
+			// else if (this.loginEOSService.eosioWalletType === 'eostock') {
+			// 	if (!(<any>window).eosTock) {
+			// 		document.addEventListener('EOSTOCK_CONNECTED', () => {
+			// 			this.loginEOSService.initEostock();
+			// 		});
+			// 		return;
+			// 	}
+			// 	this.loginEOSService.initEostock();
+			// }
+			else if (this.loginEOSService.eosioWalletType === 'wax') {
 				this.loginEOSService.initWAX();
 			} else if (this.loginEOSService.eosioWalletType === 'anchorLink') {
 				this.loginEOSService.initAnchorLink();

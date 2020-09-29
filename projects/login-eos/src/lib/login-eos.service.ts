@@ -52,7 +52,7 @@ export class LoginEOSService {
   initCounterErr = 0;
   eosTock: any;
   inProgress = false;
-  accountInfo = {};
+  accountInfo = { publicKey: '' };
 
   constructor(private toastyService: ToastaService,
     private toastyConfig: ToastaConfig,
@@ -85,15 +85,18 @@ export class LoginEOSService {
       // if prior session found, establish various components to use it
       this.accountName = session.auth.actor;
       this.accountInfo["publicKey"] = session.publicKey;
+      // console.log("session", session);
       this.options = { authorization: [`${session.auth.actor}@${session.auth.permission}`] };
       localStorage.setItem('walletConnected', 'connected');
       localStorage.setItem('eosioWalletType', this.eosioWalletType);
       this.loggedIn.emit(true);
       this.connected = true;
       this.closePopUp();
-    } else {
+    }
+    else {
       // otherwise establish new session
       let identity = await this.anchorLink.login("ulm-eosio");
+      // console.log("identity", identity);
       this.accountInfo["publicKey"] = identity.signerKey;
       this.accountName = identity.signer.actor;
       this.options = { authorization: [`${identity.signer.actor}@${identity.signer.permission}`] };
@@ -184,35 +187,35 @@ export class LoginEOSService {
     });
   }
 
-  initEostock() {
-    if (!this.WINDOW.eosTock) {
-      return this.showScatterError('Can\'t connect to EOStock');
-    }
-    this.WINDOW.eosTock.login([this.eosConf]).then(identity => {
-      if (!identity) {
-        return this.showScatterError('no identity');
-      };
-      this.eosTock = this.WINDOW.eosTock;
-      this.WINDOW.eosTock = null;
+  // initEostock() {
+  //   if (!this.WINDOW.eosTock) {
+  //     return this.showScatterError('Can\'t connect to EOStock');
+  //   }
+  //   this.WINDOW.eosTock.login([this.eosConf]).then(identity => {
+  //     if (!identity) {
+  //       return this.showScatterError('no identity');
+  //     };
+  //     this.eosTock = this.WINDOW.eosTock;
+  //     this.WINDOW.eosTock = null;
 
-      this.eos = this.eosTock.eos(this.eosConf, Api);
+  //     this.eos = this.eosTock.eos(this.eosConf, Api);
 
-      this.accountName = identity.account;
-      this.accountInfo = identity;
-      this.options = { authorization: [`${this.accountName}@active`] };
+  //     this.accountName = identity.account;
+  //     this.accountInfo = identity;
+  //     this.options = { authorization: [`${this.accountName}@active`] };
 
-      localStorage.setItem('walletConnected', 'connected');
-      this.eosioWalletType = 'eostock';
-      localStorage.setItem('eosioWalletType', this.eosioWalletType);
+  //     localStorage.setItem('walletConnected', 'connected');
+  //     this.eosioWalletType = 'eostock';
+  //     localStorage.setItem('eosioWalletType', this.eosioWalletType);
 
-      this.loggedIn.emit(true);
-      this.connected = true;
-      this.closePopUp();
-      this.showMessage(`Hi ${this.accountName} :)`);
-    }).catch(error => {
-      this.showScatterError(error);
-    });
-  }
+  //     this.loggedIn.emit(true);
+  //     this.connected = true;
+  //     this.closePopUp();
+  //     this.showMessage(`Hi ${this.accountName} :)`);
+  //   }).catch(error => {
+  //     this.showScatterError(error);
+  //   });
+  // }
 
   async initWAX() {
     const wax: any = new waxjs.WaxJS(this.config.httpEndpoint);
@@ -381,6 +384,7 @@ export class LoginEOSService {
       location.reload();
     } else if (this.eosioWalletType === 'anchorLink') {
       localStorage.setItem('walletConnected', 'disconnect');
+      localStorage.clear();
       location.reload();
     }
   }
