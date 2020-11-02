@@ -1,4 +1,4 @@
-#popup-window{
+#popup-window, #popup-ledger{
 	position: fixed;
 	width: 100%;
 	height: 100%;
@@ -12,9 +12,35 @@
   opacity: 0;
   transition: opacity 0.3s ease-in;
 }
-.popup-window-visible{
+.popup-window-visible, .popup-ledger-visible{
 	visibility: visible !important;
   opacity:1 !important;
+}
+.btn-container {
+  display: flex;
+  margin-top: 20px;
+  justify-content: space-between;
+}
+.btn-confirm, .btn-back {
+  color: white;
+  padding: 10px 30px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.btn-confirm {
+  background-color: forestgreen;
+}
+.btn-back {
+  background-color: red;
+}
+.ledger-name {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 .popup-container{
     padding: 14px 24px 24px 24px;

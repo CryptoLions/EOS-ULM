@@ -4,6 +4,7 @@ import { configInterface, configNetworkService } from './login-config.service';
 import { LoginEOSComponent } from './login-eos.component';
 import { ToastaModule } from 'ngx-toasta';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -12,22 +13,23 @@ import { CommonModule } from '@angular/common';
 	],
 	imports: [
 		ToastaModule.forRoot(),
-		CommonModule
+		CommonModule,
+		FormsModule
 	],
 	exports: [LoginEOSComponent],
 	bootstrap: [LoginEOSComponent]
 })
-export class LoginEOSModule { 
+export class LoginEOSModule {
 	static forRoot(config: configInterface): ModuleWithProviders {
-		return { 
+		return {
 			ngModule: LoginEOSModule,
 			providers: [
-  				LoginEOSService,
-  				{
-  					provide: configNetworkService,
-  					useValue: config
-  				}
-  			]
+				LoginEOSService,
+				{
+					provide: configNetworkService,
+					useValue: config
+				}
+			]
 		}
 	}
 }

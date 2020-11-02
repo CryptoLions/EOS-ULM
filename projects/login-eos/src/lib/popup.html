@@ -51,6 +51,17 @@
 			</div>
 		</div> -->
 		<div class="login-wallet">
+			<div (click)="loginEOSService.openPopupLedger()" class="login-wallet-content">
+				<div class="login-wallet-logo"><img
+						src="data:image/png;base64,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"
+						alt="" width="36" /></div>
+				<div class="login-wallet-desc">
+					<div class="login-wallet-header">Ledger</div>
+					<div class="login-wallet-text">Use Ledger hardware wallet.</div>
+				</div>
+			</div>
+		</div>
+		<div class="login-wallet">
 			<div (click)="loginEOSService.initAnchorLink()" class="login-wallet-content">
 				<div class="login-wallet-logo"><img width="40"
 						src="data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='80' cy='80' r='80' fill='%233650A2'/%3E%3Cpath d='m80.006 30c2.2988 0 4.3956 1.3134 5.3987 3.3818l24.006 49.5 0.542 1.1178h-13.337l-3.8797-8h-25.461l-3.8798 8h-13.337l0.5423-1.1182 24.006-49.5c1.0031-2.0684 3.0998-3.3818 5.3986-3.3818zm-7.8807 36h15.761l-7.8807-16.25-7.8807 16.25zm25.874 35h12.006c-0.361 16.152-13.731 29-29.999 29s-29.638-12.848-29.998-29h12.005c0.281 7.354 5.1673 13.631 11.987 15.996v-23.996c0-3.3137 2.6863-6 6-6s6 2.6863 6 6v24c6.8262-2.362 11.718-8.641 11.999-16z' clip-rule='evenodd' fill='%23fff' fill-rule='evenodd'/%3E%3C/svg%3E%0A"
@@ -68,5 +79,23 @@
 										<div class="login-wallet-text">Use Ledger Hardware to access wallet.</div>
 									</div>
 							</div>-->
+	</div>
+</div>
+
+<div id="popup-ledger">
+	<div class="popup-container">
+		<div class="popup-header">
+			<span class="popup-header-text">Next, please enter your username</span>
+			<span class="popup-close-icon" (click)="loginEOSService.closePopUpLedger()">&times;</span>
+		</div>
+		<div>
+			<input id="ledger-input" placeholder="Account Name" class="ledger-name"
+				[(ngModel)]="loginEOSService.ledgerAccName" title="Max length 12, avalable chars a-z and numbers 1-5">
+		</div>
+		<div class="btn-container">
+			<div class="btn-confirm" (click)="loginEOSService.ledgerConfirm()" name="phone_number">
+				Continue</div>
+			<div class="btn-back">Go Back</div>
+		</div>
 	</div>
 </div>

@@ -41,6 +41,9 @@ export class LoginEOSComponent implements OnInit {
 			} else if (this.loginEOSService.eosioWalletType === 'anchorLink') {
 				this.loginEOSService.initAnchorLink();
 			}
+			else if (this.loginEOSService.eosioWalletType === 'ledger') {
+				this.loginEOSService.initLedger(true);
+			}
 		}
 	}
 }

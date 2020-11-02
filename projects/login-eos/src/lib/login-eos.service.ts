@@ -12,6 +12,7 @@ import ScatterEOS from '@scatterjs/eosjs2';
 
 import * as waxjs from "@waxio/waxjs/dist";
 
+import { Ledger, LedgerUser } from 'ual-ledger';
 //import { SignatureProvider } from 'eosjs-ledger-signature-provider';
 
 @Injectable({
@@ -38,6 +39,15 @@ export class LoginEOSService {
     chainId: this.config.chain
   });
 
+  exampleNet = {
+    chainId: this.config.chain,
+    rpcEndpoints: [{
+      protocol: this.config.protocol,
+      host: this.config.host,
+      port: this.config.port,
+    }]
+  }
+
   anchorLink: any;
   anchorLinkSession: any = LocalSessionStorage;
   rpc: any = new JsonRpc(this.network.fullhost());
@@ -53,6 +63,9 @@ export class LoginEOSService {
   eosTock: any;
   inProgress = false;
   accountInfo = { publicKey: '' };
+  ledgerAccName = '';
+  ledger: any;;
+  user: any;;
 
   constructor(private toastyService: ToastaService,
     private toastyConfig: ToastaConfig,
@@ -60,6 +73,70 @@ export class LoginEOSService {
     this.toastyConfig.position = 'top-center';
     this.toastyConfig.theme = 'material';
     ScatterJS.plugins(new ScatterEOS());
+  }
+
+  async ledgerConfirm() {
+    let accNameIsValid = this.ledgerAccName.match(/^[a-z0-5]+$/) != null;
+    if (accNameIsValid && this.ledgerAccName.length > 0 && this.ledgerAccName.length <= 12) {
+      try {
+        await this.initLedger();
+        this.closePopUpLedger();
+        this.closePopUp();
+      } catch (error) {
+        this.showScatterError(error);
+      }
+    } else {
+      this.showScatterError("Invalid account name");
+    }
+  }
+
+  async initLedger(selfInvoked = false) {
+    let accName;
+    const rpc = new JsonRpc(this.network.fullhost());
+    this.rpc = rpc;
+    this.eos = ScatterJS.eos(this.network, Api, { rpc: this.rpc });
+    if (selfInvoked) {
+      accName = localStorage.getItem("accName");
+      this.accountName = localStorage.getItem("accName");
+      let ledger = new Ledger([this.exampleNet], { appName: this.config.appName });
+      await ledger.init();
+      this.user = new LedgerUser(this.exampleNet, accName, false);
+      await this.user.init();
+      try {
+        await this.user.isAccountValid();
+      } catch (error) {
+        this.showScatterError(error);
+        this.logout();
+      }
+    } else {
+      this.ledger = new Ledger([this.exampleNet], { appName: this.config.appName });
+      accName = this.ledgerAccName;
+      await this.ledger.init();
+      this.user = new LedgerUser(this.exampleNet, accName, this.ledger.requiresGetKeyConfirmation(accName));
+
+      await this.user.init();
+
+      await this.ledger.login(accName);
+      localStorage.setItem('accName', accName);
+      localStorage.setItem('walletConnected', 'connected');
+      this.eosioWalletType = 'ledger';
+      localStorage.setItem('eosioWalletType', this.eosioWalletType);
+      this.accountName = accName;
+      this.loggedIn.emit(true);
+      this.connected = true;
+      this.user = this.ledger.users[0];
+    }
+
+    this.eos['transaction'] = ({ actions }, broadcast: true, sign: false) => {
+      return this.user.signTransaction({ actions }, {
+        blocksBehind: 3,
+        expireSeconds: 30,
+        broadcast,
+      })
+    };
+
+
+
   }
 
   async initAnchorLink() {
@@ -85,7 +162,6 @@ export class LoginEOSService {
       // if prior session found, establish various components to use it
       this.accountName = session.auth.actor;
       this.accountInfo["publicKey"] = session.publicKey;
-      // console.log("session", session);
       this.options = { authorization: [`${session.auth.actor}@${session.auth.permission}`] };
       localStorage.setItem('walletConnected', 'connected');
       localStorage.setItem('eosioWalletType', this.eosioWalletType);
@@ -96,7 +172,6 @@ export class LoginEOSService {
     else {
       // otherwise establish new session
       let identity = await this.anchorLink.login("ulm-eosio");
-      // console.log("identity", identity);
       this.accountInfo["publicKey"] = identity.signerKey;
       this.accountName = identity.signer.actor;
       this.options = { authorization: [`${identity.signer.actor}@${identity.signer.permission}`] };
@@ -130,7 +205,6 @@ export class LoginEOSService {
     this.rpc = rpc;
     this.eos = ScatterJS.eos(this.network, Api, { rpc: this.rpc });
     this.inProgress = true;
-    // console.log(rpc);
     this.ScatterJS.connect(this.config.appName, { network: this.network }).then(connected => {
       if (!connected && !selfInvoked) {
         if (this.initCounterErr < 2) {
@@ -276,12 +350,28 @@ export class LoginEOSService {
     popup.addEventListener("click", (event: any) => {
       if (event.srcElement.className === 'popup-window-visible') {
         this.closePopUp();
+        this.closePopUpLedger();
       }
     });
   };
 
   closePopUp() {
     let popup = document.getElementById('popup-window');
+    popup.removeAttribute("class");
+  }
+
+  openPopupLedger() {
+    let popup = document.getElementById('popup-ledger');
+    popup.setAttribute("class", "popup-ledger-visible");
+    popup.addEventListener("click", (event: any) => {
+      if (event.srcElement.className === 'popup-ledger-visible') {
+        this.closePopUpLedger();
+      }
+    });
+  };
+
+  closePopUpLedger() {
+    let popup = document.getElementById('popup-ledger');
     popup.removeAttribute("class");
   }
 
@@ -384,6 +474,9 @@ export class LoginEOSService {
       location.reload();
     } else if (this.eosioWalletType === 'anchorLink') {
       localStorage.setItem('walletConnected', 'disconnect');
+      localStorage.clear();
+      location.reload();
+    } else if (this.eosioWalletType === 'ledger') {
       localStorage.clear();
       location.reload();
     }
