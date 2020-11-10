@@ -195,6 +195,33 @@
 	}
 }
 
+@media only screen and (max-width: 415px) {
+  .login-wallet {
+    padding: 10px;
+    padding-right: 0;
+  }
 
+  .login-wallet-desc {
+    margin-left: 5px;
+  }
+}
+
+@media only screen and (max-width: 375px) {
+	.popup-container{
+		width: 98%;
+  }
+  
+  .login-wallet {
+    padding: 5px 0 5px 5px;
+  }
+
+  .popup-container {
+    padding: 5px;
+  }
+
+  .login-wallet-desc {
+    margin-left: 3px;
+  }
+}
 
 

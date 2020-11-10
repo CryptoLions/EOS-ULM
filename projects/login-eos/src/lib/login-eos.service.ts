@@ -20,7 +20,9 @@ import { Ledger, LedgerUser } from 'ual-ledger';
 })
 export class LoginEOSService {
 
+
   WINDOW: any = window;
+  isMobile: boolean = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(this.WINDOW.navigator.userAgent);
   connected = (localStorage.getItem('walletConnected') === 'connected') ? true : false;
   eosioWalletType = localStorage.getItem('eosioWalletType') || 'scatter';
   eosConf = {
@@ -292,30 +294,45 @@ export class LoginEOSService {
   // }
 
   async initWAX() {
-    const wax: any = new waxjs.WaxJS(this.config.httpEndpoint);
+    const wax: any = new waxjs.WaxJS(this.config.httpEndpoint, null, null, false);
     const rpc = new JsonRpc(this.network.fullhost());
     this.rpc = rpc;
     this.eos = ScatterJS.eos(this.network, Api, { rpc: this.rpc });
     // const waxRPC: any = ScatterJS.eos(this.network, Api, { rpc: this.rpc });
+    // try { 
+    //   let isAutoLoginAvailable
+    //   try {
+    //     isAutoLoginAvailable = await wax.isAutoLoginAvailable();
+    //     console.log("isAutoLoginAvailable", isAutoLoginAvailable)
+    //   }
+    //   catch (error) {
+    //     console.log("error", error);
+    //     console.log("isAutoLoginAvailable = await wax.isAutoLoginAvailable();");
+    //   }
+    //   if (isAutoLoginAvailable) {
+    //     this.accountName = wax.userAccount;
+    //     this.accountInfo["publicKey"] = wax.pubKeys[0];
+    //     console.log(this.accountName);
+    //   } else {
+    //     this.accountName = await wax.login();
+    //     this.accountInfo["publicKey"] = wax.pubKeys[0];
+    //     console.log(this.accountName);
+    //   }
 
-    try {
-      let isAutoLoginAvailable
-      try {
-        isAutoLoginAvailable = await wax.isAutoLoginAvailable();
-      }
-      catch (error) {
-        console.log("error", error);
-      }
-      if (isAutoLoginAvailable) {
-        this.accountName = wax.userAccount;
-        this.accountInfo["publicKey"] = wax.pubKeys[0];
-      } else {
-        this.accountName = await wax.login();
-        this.accountInfo["publicKey"] = wax.pubKeys[0];
-      }
+    // } catch (error) {
+    //   this.showScatterError(error);
+    //   console.log(error);
+    //   console.log('catch (error) {')
+    // }
 
-    } catch (error) {
-      this.showScatterError(error);
+    let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
+
+    if (isAutoLoginAvailable) {
+      this.accountName = wax.userAccount;
+      this.accountInfo["publicKey"] = wax.pubKeys[0];
+    } else {
+      this.accountName = await wax.login();
+      this.accountInfo["publicKey"] = wax.pubKeys[0];
     }
 
     if (!this.accountName) {
@@ -327,7 +344,7 @@ export class LoginEOSService {
         actions
       }, {
         blocksBehind: 3,
-        expireSeconds: 30,
+        expireSeconds: 1200,
         broadcast,
         sign
       });
@@ -454,6 +471,18 @@ export class LoginEOSService {
     this.toastyService.success(toastOption);
   }
 
+  deleteAllCookies() {
+    var cookies = document.cookie.split(";");
+
+    for (var i = 0; i < cookies.length; i++) {
+      var cookie = cookies[i];
+      var eqPos = cookie.indexOf("=");
+      var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+    location.reload();
+  }
+
   logout() {
     if (this.eosioWalletType === 'scatter') {
       this.ScatterJS.forgetIdentity().then(() => {
@@ -471,7 +500,7 @@ export class LoginEOSService {
       });
     } else if (this.eosioWalletType === 'wax') {
       localStorage.setItem('walletConnected', 'disconnect');
-      location.reload();
+      this.deleteAllCookies();
     } else if (this.eosioWalletType === 'anchorLink') {
       localStorage.setItem('walletConnected', 'disconnect');
       localStorage.clear();

@@ -116,6 +116,11 @@ this.loginEOSService.contractError(err);
 this.loginEOSService.showMessage('your message text');
 ```
 
-
+## Important notes
+```
+- ledger only works on sites that use https
+- in order to use WAX Cloud Wallet, WAX (uppercase!) must be present in the appName
+- in order to use my key, EOS (uppercase!) must be present in the appName
+```
 
 
