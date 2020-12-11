@@ -1,6 +1,7 @@
 # Login with popular EOS wallets
 
 ## Module dependencies
+
 ```
 scatter-core
 scatterjs-plugin-eosjs
@@ -8,12 +9,15 @@ eosjs@20.0.0
 @waxio/waxjs@0.0.11
 anchor-link@2.0.1
 ```
+
 ## Installation
+
 ```
 npm i --save @cryptolions/ulm-eosio
 ```
 
 ## Patch for scatter libs compatible with your angular app
+
 ```
 // put the code below in patch.js in root of your project and (node patch.js)
 const fs = require('fs');
@@ -32,7 +36,9 @@ fs.readFile(f, 'utf8', function (err,data) {
 ```
 
 ## Usage
+
 ### app.module.ts
+
 ```
 import { LoginEOSModule } from '@cryptolions/ulm-eosio';
 
@@ -52,11 +58,15 @@ LoginEOSModule.forRoot({
 ...
 
 ```
+
 ### app.component.html
+
 ```
 <app-login-eos></app-login-eos>
 ```
+
 ### login.component.ts
+
 ```
 import { Component, OnInit } from '@angular/core';
 import { LoginEOSService } from '@cryptolions/ulm-eosio';
@@ -66,26 +76,30 @@ import { LoginEOSService } from '@cryptolions/ulm-eosio';
   templateUrl: './login.component.html'
 })
 export class LoginComponent {
-  constructor(public loginEOSService: LoginEOSService){}   
+  constructor(public loginEOSService: LoginEOSService){}
 }
 
 ```
+
 ### login.component.html
+
 ```
-// example of login/logout button 
+// example of login/logout button
  <a class="" (click)="loginEOSService.openPopup()" *ngIf="!loginEOSService.connected">Login</a>
- <a class="" (click)="loginEOSService.logout()" *ngIf="loginEOSService.connected">Logout</a>  
+ <a class="" (click)="loginEOSService.logout()" *ngIf="loginEOSService.connected">Logout</a>
 ```
 
 ## Events
+
 ```
-// you can subscribe for loggedin events 
+// you can subscribe for loggedin events
 this.loginEOSService.loggedIn.subscribe(res => {
         // do something
 });
 ```
 
 ## Example of usage with transaction
+
 ```
 this.loginEOSService.eos.transaction({
       actions: [{ 'your actions' }]
@@ -100,6 +114,7 @@ this.loginEOSService.eos.transaction({
 ```
 
 ## Example of usage with get_table_rows
+
 ```
 this.loginEOSService.rpc.get_table_rows({
   'your data'
@@ -111,16 +126,17 @@ this.loginEOSService.rpc.get_table_rows({
 ```
 
 ## Show messages
+
 ```
 this.loginEOSService.contractError(err);
 this.loginEOSService.showMessage('your message text');
 ```
 
 ## Important notes
+
 ```
 - ledger only works on sites that use https
 - in order to use WAX Cloud Wallet, WAX (uppercase!) must be present in the appName
-- in order to use my key, EOS (uppercase!) must be present in the appName
+- in order to use MYKEY, EOS (uppercase!) must be present in the appName
+- in order to use Proton Wallet, XPR (uppercase!) must be present in the appName
 ```
-
-

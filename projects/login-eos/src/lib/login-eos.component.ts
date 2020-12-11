@@ -43,6 +43,9 @@ export class LoginEOSComponent implements OnInit {
 			}
 			else if (this.loginEOSService.eosioWalletType === 'ledger') {
 				this.loginEOSService.initLedger(true);
+			} 
+			else if (this.loginEOSService.eosioWalletType === 'proton') {
+				this.loginEOSService.initProton(true);
 			}
 		}
 	}

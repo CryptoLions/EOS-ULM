@@ -20,7 +20,7 @@ import { FormsModule } from '@angular/forms';
 	bootstrap: [LoginEOSComponent]
 })
 export class LoginEOSModule {
-	static forRoot(config: configInterface): ModuleWithProviders {
+	static forRoot(config: configInterface): ModuleWithProviders<LoginEOSModule> {
 		return {
 			ngModule: LoginEOSModule,
 			providers: [

@@ -11,6 +11,9 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "es5",
+    "types": [
+      "node"
+    ],
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -24,7 +27,8 @@
       ],
       "login-eos/*": [
         "dist/login-eos/*"
-      ]
+      ],
+      "stream": ["./node_modules/readable-stream"]
     }
   }
 }

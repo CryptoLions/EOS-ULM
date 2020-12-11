@@ -4,16 +4,16 @@ import { configInterface, configNetworkService } from './login-config.service';
 
 // import ScatterLynx from 'scatterjs-plugin-lynx';
 import { Link, LinkSession } from 'anchor-link';
-import BrowserTransport from 'anchor-link-browser-transport'
+import BrowserTransport from 'anchor-link-browser-transport';
 import { JsonRpc, Api } from 'eosjs';
 import ScatterJS from '@scatterjs/core';
 import ScatterEOS from '@scatterjs/eosjs2';
-// import AnchorLinkBrowserTransport from 'anchor-link-browser-transport'
+import { ConnectWallet } from '@protonprotocol/proton-web-sdk';
 
-import * as waxjs from "@waxio/waxjs/dist";
+
+import * as waxjs from '@waxio/waxjs/dist';
 
 import { Ledger, LedgerUser } from 'ual-ledger';
-//import { SignatureProvider } from 'eosjs-ledger-signature-provider';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +21,21 @@ import { Ledger, LedgerUser } from 'ual-ledger';
 export class LoginEOSService {
 
 
+
+  constructor(private toastyService: ToastaService,
+    private toastyConfig: ToastaConfig,
+    @Inject(configNetworkService) public config) {
+    this.toastyConfig.position = 'top-center';
+    this.toastyConfig.theme = 'material';
+    ScatterJS.plugins(new ScatterEOS());
+  }
+
+
+
+
   WINDOW: any = window;
   isMobile: boolean = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(this.WINDOW.navigator.userAgent);
+  isIos = this.iOS();
   connected = (localStorage.getItem('walletConnected') === 'connected') ? true : false;
   eosioWalletType = localStorage.getItem('eosioWalletType') || 'scatter';
   eosConf = {
@@ -31,7 +44,7 @@ export class LoginEOSService {
     verbose: this.config.verbose
   };
 
-  //signatureProvider = new SignatureProvider();
+  // signatureProvider = new SignatureProvider();
   network = ScatterJS.Network.fromJson({
     blockchain: this.config.blockchain,
     host: this.config.host,
@@ -48,7 +61,7 @@ export class LoginEOSService {
       host: this.config.host,
       port: this.config.port,
     }]
-  }
+  };
 
   anchorLink: any;
   anchorLinkSession: any = LocalSessionStorage;
@@ -66,19 +79,25 @@ export class LoginEOSService {
   inProgress = false;
   accountInfo = { publicKey: '' };
   ledgerAccName = '';
-  ledger: any;;
-  user: any;;
+  ledger: any;  user: any;
+  requestAccount = 'myprotonacc'; // optional
 
-  constructor(private toastyService: ToastaService,
-    private toastyConfig: ToastaConfig,
-    @Inject(configNetworkService) public config) {
-    this.toastyConfig.position = 'top-center';
-    this.toastyConfig.theme = 'material';
-    ScatterJS.plugins(new ScatterEOS());
+  iOS() {
+    return [
+      'iPad Simulator',
+      'iPhone Simulator',
+      'iPod Simulator',
+      'iPad',
+      'iPhone',
+      'iPod'
+    ].includes(navigator.platform)
+    // iPad on iOS 13 detection
+    || (this.WINDOW.navigator.userAgent.includes('Mac') && 'ontouchend' in document);
   }
 
+
   async ledgerConfirm() {
-    let accNameIsValid = this.ledgerAccName.match(/^[a-z0-5]+$/) != null;
+    const accNameIsValid = this.ledgerAccName.match(/^[a-z0-5]+$/) != null;
     if (accNameIsValid && this.ledgerAccName.length > 0 && this.ledgerAccName.length <= 12) {
       try {
         await this.initLedger();
@@ -88,7 +107,7 @@ export class LoginEOSService {
         this.showScatterError(error);
       }
     } else {
-      this.showScatterError("Invalid account name");
+      this.showScatterError('Invalid account name');
     }
   }
 
@@ -98,9 +117,9 @@ export class LoginEOSService {
     this.rpc = rpc;
     this.eos = ScatterJS.eos(this.network, Api, { rpc: this.rpc });
     if (selfInvoked) {
-      accName = localStorage.getItem("accName");
-      this.accountName = localStorage.getItem("accName");
-      let ledger = new Ledger([this.exampleNet], { appName: this.config.appName });
+      accName = localStorage.getItem('accName');
+      this.accountName = localStorage.getItem('accName');
+      const ledger = new Ledger([this.exampleNet], { appName: this.config.appName });
       await ledger.init();
       this.user = new LedgerUser(this.exampleNet, accName, false);
       await this.user.init();
@@ -134,7 +153,7 @@ export class LoginEOSService {
         blocksBehind: 3,
         expireSeconds: 30,
         broadcast,
-      })
+      });
     };
 
 
@@ -151,7 +170,7 @@ export class LoginEOSService {
       chainId: this.config.chain,
       rpc: `${this.network.protocol}://${this.network.host}:${this.network.port}`,
       transport: new BrowserTransport()
-    })
+    });
     // establish persistence
     this.anchorLinkSession = new LocalSessionStorage();
     // attempt to restore any prior sessions
@@ -163,32 +182,28 @@ export class LoginEOSService {
     if (session) {
       // if prior session found, establish various components to use it
       this.accountName = session.auth.actor;
-      this.accountInfo["publicKey"] = session.publicKey;
+      this.accountInfo['publicKey'] = session.publicKey;
       this.options = { authorization: [`${session.auth.actor}@${session.auth.permission}`] };
-      localStorage.setItem('walletConnected', 'connected');
-      localStorage.setItem('eosioWalletType', this.eosioWalletType);
-      this.loggedIn.emit(true);
-      this.connected = true;
-      this.closePopUp();
-    }
-    else {
+    } else {
       // otherwise establish new session
-      let identity = await this.anchorLink.login("ulm-eosio");
-      this.accountInfo["publicKey"] = identity.signerKey;
+      const identity = await this.anchorLink.login('ulm-eosio');
+      this.accountInfo['publicKey'] = identity.signerKey;
       this.accountName = identity.signer.actor;
       this.options = { authorization: [`${identity.signer.actor}@${identity.signer.permission}`] };
-      // set appropriate localstorage values for uml
-      localStorage.setItem('walletConnected', 'connected');
-      localStorage.setItem('eosioWalletType', this.eosioWalletType);
+
       // save this session for future use
       this.anchorLinkSession.store(identity.session, this.config.chain);
-      this.loggedIn.emit(true);
-      this.connected = true;
       // set tge current session to that of the identity
       session = identity.session;
-      this.closePopUp();
       this.showMessage(`Hi ${this.accountName} :)`);
     }
+
+    // set appropriate localstorage values for uml
+    localStorage.setItem('walletConnected', 'connected');
+    localStorage.setItem('eosioWalletType', this.eosioWalletType);
+    this.loggedIn.emit(true);
+    this.connected = true;
+    this.closePopUp();
     this.eos['transaction'] = ({ actions }, broadcast: true, sign: false) => {
       return this.anchorLink.transact({
         actions
@@ -199,6 +214,36 @@ export class LoginEOSService {
         sign
       });
     };
+  }
+  async initProton(selfInvoked = false) {
+
+  // Create Wallet Class
+  const wallet = new ProtonWallet();
+  wallet.host = this.config.httpEndpoint;
+
+  const rpc = new JsonRpc(this.network.fullhost());
+  this.rpc = rpc;
+  this.eos = ScatterJS.eos(this.network, Api, { rpc: this.rpc });
+
+  if (selfInvoked) {
+    await wallet.login({ restoreSession: true });
+    this.accountName = wallet.session.auth.actor;
+    this.options = { authorization: [`${wallet.session.auth.actor}@${wallet.session.auth.permission}`] };
+  } else {
+    await wallet.login();
+    const auth = JSON.parse(localStorage.getItem('proton-storage-user-auth'));
+    this.accountName = auth.actor;
+    this.options = { authorization: [`${auth.actor}@${auth.permission}`] };
+  }
+  this.eosioWalletType = 'proton';
+  this.loggedIn.emit(true);
+  this.connected = true;
+  this.closePopUp();
+
+  // Login
+  this.eos['transaction'] = ({ actions }, broadcast: true, sign: false) => {
+    return wallet.transact({actions}, broadcast, sign);
+  };
 
   }
 
@@ -222,11 +267,11 @@ export class LoginEOSService {
         this.inProgress = false;
         if (!id) {
           return this.showScatterError('no identity');
-        };
+        }
 
-        let account = ScatterJS.account('eos');
+        const account = ScatterJS.account('eos');
         this.accountName = account.name;
-        this.accountInfo["publicKey"] = account.publicKey;
+        this.accountInfo['publicKey'] = account.publicKey;
         this.options = { authorization: [`${account.name}@${account.authority}`] };
 
         localStorage.setItem('walletConnected', 'connected');
@@ -263,76 +308,20 @@ export class LoginEOSService {
     });
   }
 
-  // initEostock() {
-  //   if (!this.WINDOW.eosTock) {
-  //     return this.showScatterError('Can\'t connect to EOStock');
-  //   }
-  //   this.WINDOW.eosTock.login([this.eosConf]).then(identity => {
-  //     if (!identity) {
-  //       return this.showScatterError('no identity');
-  //     };
-  //     this.eosTock = this.WINDOW.eosTock;
-  //     this.WINDOW.eosTock = null;
-
-  //     this.eos = this.eosTock.eos(this.eosConf, Api);
-
-  //     this.accountName = identity.account;
-  //     this.accountInfo = identity;
-  //     this.options = { authorization: [`${this.accountName}@active`] };
-
-  //     localStorage.setItem('walletConnected', 'connected');
-  //     this.eosioWalletType = 'eostock';
-  //     localStorage.setItem('eosioWalletType', this.eosioWalletType);
-
-  //     this.loggedIn.emit(true);
-  //     this.connected = true;
-  //     this.closePopUp();
-  //     this.showMessage(`Hi ${this.accountName} :)`);
-  //   }).catch(error => {
-  //     this.showScatterError(error);
-  //   });
-  // }
-
   async initWAX() {
     const wax: any = new waxjs.WaxJS(this.config.httpEndpoint, null, null, false);
     const rpc = new JsonRpc(this.network.fullhost());
     this.rpc = rpc;
     this.eos = ScatterJS.eos(this.network, Api, { rpc: this.rpc });
-    // const waxRPC: any = ScatterJS.eos(this.network, Api, { rpc: this.rpc });
-    // try { 
-    //   let isAutoLoginAvailable
-    //   try {
-    //     isAutoLoginAvailable = await wax.isAutoLoginAvailable();
-    //     console.log("isAutoLoginAvailable", isAutoLoginAvailable)
-    //   }
-    //   catch (error) {
-    //     console.log("error", error);
-    //     console.log("isAutoLoginAvailable = await wax.isAutoLoginAvailable();");
-    //   }
-    //   if (isAutoLoginAvailable) {
-    //     this.accountName = wax.userAccount;
-    //     this.accountInfo["publicKey"] = wax.pubKeys[0];
-    //     console.log(this.accountName);
-    //   } else {
-    //     this.accountName = await wax.login();
-    //     this.accountInfo["publicKey"] = wax.pubKeys[0];
-    //     console.log(this.accountName);
-    //   }
 
-    // } catch (error) {
-    //   this.showScatterError(error);
-    //   console.log(error);
-    //   console.log('catch (error) {')
-    // }
-
-    let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
+    const isAutoLoginAvailable = await wax.isAutoLoginAvailable();
 
     if (isAutoLoginAvailable) {
       this.accountName = wax.userAccount;
-      this.accountInfo["publicKey"] = wax.pubKeys[0];
+      this.accountInfo['publicKey'] = wax.pubKeys[0];
     } else {
       this.accountName = await wax.login();
-      this.accountInfo["publicKey"] = wax.pubKeys[0];
+      this.accountInfo['publicKey'] = wax.pubKeys[0];
     }
 
     if (!this.accountName) {
@@ -362,38 +351,36 @@ export class LoginEOSService {
   }
 
   openPopup() {
-    let popup = document.getElementById('popup-window');
-    popup.setAttribute("class", "popup-window-visible");
-    popup.addEventListener("click", (event: any) => {
+    const popup = document.getElementById('popup-window');
+    popup.setAttribute('class', 'popup-window-visible');
+    popup.addEventListener('click', (event: any) => {
       if (event.srcElement.className === 'popup-window-visible') {
         this.closePopUp();
         this.closePopUpLedger();
       }
     });
-  };
-
+  }
   closePopUp() {
-    let popup = document.getElementById('popup-window');
-    popup.removeAttribute("class");
+    const popup = document.getElementById('popup-window');
+    popup.removeAttribute('class');
   }
 
   openPopupLedger() {
-    let popup = document.getElementById('popup-ledger');
-    popup.setAttribute("class", "popup-ledger-visible");
-    popup.addEventListener("click", (event: any) => {
+    const popup = document.getElementById('popup-ledger');
+    popup.setAttribute('class', 'popup-ledger-visible');
+    popup.addEventListener('click', (event: any) => {
       if (event.srcElement.className === 'popup-ledger-visible') {
         this.closePopUpLedger();
       }
     });
-  };
-
+  }
   closePopUpLedger() {
-    let popup = document.getElementById('popup-ledger');
-    popup.removeAttribute("class");
+    const popup = document.getElementById('popup-ledger');
+    popup.removeAttribute('class');
   }
 
   showScatterError(error) {
-    let toastOption: ToastOptions = {
+    const toastOption: ToastOptions = {
       title: 'Error',
       msg: '',
       showClose: true,
@@ -402,15 +389,15 @@ export class LoginEOSService {
     };
     if (!error) { return; }
     if (!error.message) {
-      toastOption.msg = error
+      toastOption.msg = error;
       return this.toastyService.error(toastOption);
     }
-    let msg = error.message;
+    const msg = error.message;
     console.log('Scatter error type - ', error);
     if ((error.type === 'identity_rejected' || error.type === 'locked') && !this.connected) {
       location.reload();
     }
-    toastOption.msg = msg || error
+    toastOption.msg = msg || error;
     this.toastyService.error(toastOption);
   }
 
@@ -427,7 +414,7 @@ export class LoginEOSService {
     } else {
       err = err.message;
     }
-    if (err.indexOf('requires a config.keyProvider') >= 0) err = 'Please, login Scatter first!';
+    if (err.indexOf('requires a config.keyProvider') >= 0) { err = 'Please, login Scatter first!'; }
 
     const toastOption: ToastOptions = {
       title: 'Error',
@@ -472,13 +459,13 @@ export class LoginEOSService {
   }
 
   deleteAllCookies() {
-    var cookies = document.cookie.split(";");
+    const cookies = document.cookie.split(';');
 
-    for (var i = 0; i < cookies.length; i++) {
-      var cookie = cookies[i];
-      var eqPos = cookie.indexOf("=");
-      var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i];
+      const eqPos = cookie.indexOf('=');
+      const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
     }
     location.reload();
   }
@@ -506,6 +493,9 @@ export class LoginEOSService {
       localStorage.clear();
       location.reload();
     } else if (this.eosioWalletType === 'ledger') {
+      localStorage.clear();
+      location.reload();
+    } else if (this.eosioWalletType === 'proton') {
       localStorage.clear();
       location.reload();
     }
@@ -552,4 +542,55 @@ class LocalSessionStorage implements SessionStorage {
   async remove(id: string, accountName?: string) {
     localStorage.removeItem(this.sessionKey(id, accountName));
   }
+}
+
+
+class ProtonWallet {
+  link = undefined;
+  session = undefined;
+  host: string;
+
+
+  async login ({ restoreSession = false } = {}) {
+    // Pop up modal
+    const { link, session } = await ConnectWallet({
+      linkOptions: {
+        // endpoints: ['https://api-testnet-proton.eosarabia.net'],https://proton.greymass.com
+        endpoints: [this.host],
+        restoreSession
+        // rpc: rpc /* Optional: if you wish to provide rpc directly instead of endpoints */
+      },
+      transportOptions: {
+        // requestAccount: 'ulm-eosio', /* Optional: Your proton account */
+        requestStatus: true /* Optional: Display request success and error messages, Default true */
+      },
+      selectorOptions: {
+        appName: 'ulm-eosio', /* Optional: Name to show in modal, Default 'app' */
+        // appLogo: 'https://protondemos.com/static/media/taskly-logo.ad0bfb0f.svg' /* Optional: Logo to show in modal */
+        // walletType: 'proton' /* Optional: Connect to only specified wallet (e.g. 'proton', 'anchor') */
+      }
+    });
+    this.link = link;
+    this.session = session;
+    localStorage.setItem('walletConnected', 'connected');
+    localStorage.setItem('eosioWalletType', 'proton');
+  }
+
+  async transact ({actions}, broadcast, sign) {
+    return this.session.transact({
+      transaction: {
+        actions
+      },
+      blocksBehind: 3,
+      expireSeconds: 30,
+      broadcast,
+      sign
+    });
+  }
+
+  async logout () {
+    await this.link.removeSession('ulm-eosio', this.session.auth);
+    this.session = undefined;
+  }
+
 }
