@@ -14,11 +14,11 @@ import { CommonModule } from '@angular/common';
     CommonModule,
     LoginEOSModule.forRoot({
       appName: 'test WAX',
-      httpEndpoint: 'https://proton.greymass.com',
-      chain: '384da888112027f0321850a169f737c33e53b388aad48b5adace4bab97f437e0',
+      httpEndpoint: 'https://wax.cryptolions.io',
+      chain: '1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4',
       verbose: false,
       blockchain: 'eos',
-      host: 'proton.greymass.com',
+      host: 'wax.cryptolions.io',
       port: 443,
       protocol: 'https',
       expireInSeconds: 30

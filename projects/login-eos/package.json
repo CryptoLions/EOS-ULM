@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.4.5",
+    "@eosdacio/ual-wax": "^1.4.0",
     "@protonprotocol/proton-web-sdk": "^2.6.3",
     "@scatterjs/core": "^2.7.53",
     "@scatterjs/eosjs2": "^1.5.35",

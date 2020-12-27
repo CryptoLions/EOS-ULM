@@ -9,6 +9,28 @@ import { LoginEOSService } from '../../projects/login-eos/src/lib/login-eos.serv
 export class AppComponent implements OnInit {
 	constructor(public loginEOSService: LoginEOSService){};
 
+	test() {
+		const actions = [
+			{
+				account: "eosio.token",
+				name: "transfer",
+				authorization: [
+					{
+						actor: this.loginEOSService.accountName,
+						permission: "active",
+					},
+				],
+				data: {
+					from: this.loginEOSService.accountName,
+					to: 'bohdanbohdan',
+					quantity: '0.00000001 WAX',
+					memo: 'some memo'
+				},
+			},
+		]
+		this.loginEOSService.eos.transaction({actions}).then((res)=>console.log(res));
+	}
+
 	ngOnInit(){
 		this.loginEOSService.loggedIn.subscribe(() => {
 			/*this.loginEOSService.eos.getTableRows({  code: "simpleassets",
