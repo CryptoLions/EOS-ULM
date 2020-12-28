@@ -309,53 +309,6 @@ export class LoginEOSService {
     });
   }
 
-  // async initWAX() {
-  //   const wax: any = new waxjs.WaxJS(this.config.httpEndpoint, undefined, undefined, false);
-  //   const rpc = new JsonRpc(this.network.fullhost());
-  //   this.rpc = rpc;
-  //   this.eos = ScatterJS.eos(this.network, Api, { rpc: this.rpc });
-
-  //   const  isAutoLoginAvailable = await wax.isAutoLoginAvailable();
-
-  //   if (isAutoLoginAvailable) {
-  //     this.accountName = wax.userAccount;
-  //   } else {
-  //     try {
-  //       this.accountName = await wax.login();
-  //       this.accountInfo['publicKey'] = wax.pubKeys[0];
-  //     } catch(err) {
-  //       console.log(err);
-  //     }
-  //   }
-
-
-    
-  //   if (!this.accountName) {
-  //     throw new Error('can’t get account name from wax cloud wallet');
-  //   }
-
-
-  //   this.eos['transaction'] = ({ actions }, broadcast: true, sign: false) => {
-  //     return wax.api.transact({
-  //       actions
-  //     }, {
-  //       blocksBehind: 3,
-  //       expireSeconds: 1200,
-  //       broadcast,
-  //       sign
-  //     });
-  //   };
-  //   this.options = { authorization: [`${this.accountName}@active`] };
-
-  //   localStorage.setItem('walletConnected', 'connected');
-  //   this.eosioWalletType = 'wax';
-  //   localStorage.setItem('eosioWalletType', this.eosioWalletType);
-
-  //   this.loggedIn.emit(true);
-  //   this.connected = true;
-  //   this.closePopUp();
-  //   this.showMessage(`Hi ${this.accountName} :)`);
-  // }
   wax = new Wax([this.exampleNet]);
   
   async initWAX() {
@@ -398,7 +351,7 @@ export class LoginEOSService {
     } catch (error) {
       console.log(error);
     }
-    
+
     this.eos['transaction'] = ({ actions }, broadcast: true, sign: false) => {
       return user.signTransaction({
         actions

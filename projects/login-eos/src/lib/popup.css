@@ -1,27 +1,36 @@
-#popup-window, #popup-ledger{
-	position: fixed;
-	width: 100%;
-	height: 100%;
-	background: rgba(0,0,0,.4);
-	z-index: 1000;
-	left: 0;
+#popup-window,
+#popup-ledger {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  left: 0;
   top: 0;
-  font-family: 'Helvetica', sans-serif, arial;
+  font-family: "Helvetica", sans-serif, arial;
   color: #000;
   visibility: hidden;
   opacity: 0;
   transition: opacity 0.3s ease-in;
 }
-.popup-window-visible, .popup-ledger-visible{
-	visibility: visible !important;
-  opacity:1 !important;
+.popup-window-visible,
+.popup-ledger-visible {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#popup-window {
+  z-index: 10000 !important;
+}
+#popup-ledger {
+  z-index: 10001 !important;
 }
 .btn-container {
   display: flex;
   margin-top: 20px;
   justify-content: space-between;
 }
-.btn-confirm, .btn-back {
+.btn-confirm,
+.btn-back {
   color: white;
   padding: 10px 30px;
   border-radius: 5px;
@@ -42,90 +51,90 @@
   border-radius: 4px;
   box-sizing: border-box;
 }
-.popup-container{
-    padding: 14px 24px 24px 24px;
-    position: absolute;
-	  top: 50%;
-    left: 50%;
-    width: 420px;
-    margin-right: -50%;
-    transform: translate(-50%, -50%);
-    background: #fff;
+.popup-container {
+  padding: 14px 24px 24px 24px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 420px;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
 }
-.popup-header{
-	display: flex;
-	justify-content: space-between;
-	margin-bottom: 15px;
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
 }
-.popup-header-text{
-	  font-size: 16px;
-    display: table;
-    padding: 8px 0;
-    font-weight: bold;
+.popup-header-text {
+  font-size: 16px;
+  display: table;
+  padding: 8px 0;
+  font-weight: bold;
 }
-.popup-close-icon{
-    font-size: 24px;
-    cursor: pointer;
+.popup-close-icon {
+  font-size: 24px;
+  cursor: pointer;
 }
-.popup-close-icon:hover{
-	color: #9c9c9c;
+.popup-close-icon:hover {
+  color: #9c9c9c;
 }
-.login-wallet{
-	border: 1px solid #f9f9f9;
-	padding: 20px 20px 17px;
-	display: flex;
-	margin-top: 15px;
-	cursor: pointer;
-	position: relative;
+.login-wallet {
+  border: 1px solid #f9f9f9;
+  padding: 20px 20px 17px;
+  display: flex;
+  margin-top: 15px;
+  cursor: pointer;
+  position: relative;
 }
-.login-wallet:hover{
-	background: #f9f9f9;
+.login-wallet:hover {
+  background: #f9f9f9;
 }
-.login-wallet-header{
-	font-size: 15px;
-    font-weight: bold;
+.login-wallet-header {
+  font-size: 15px;
+  font-weight: bold;
 }
-.login-wallet-text{
-	font-size: 12px;
-	color: #9c9c9c;
+.login-wallet-text {
+  font-size: 12px;
+  color: #9c9c9c;
   margin-top: 4px;
 }
-.login-wallet-others{
-	margin-top: 5px;
-	font-size: 12px;
-	display: flex;
-	color: #9c9c9c;
+.login-wallet-others {
+  margin-top: 5px;
+  font-size: 12px;
+  display: flex;
+  color: #9c9c9c;
 }
-.login-wallet-others img{
-	margin-left: 8px;
-	width: 20px;
-	height: 20px;
+.login-wallet-others img {
+  margin-left: 8px;
+  width: 20px;
+  height: 20px;
 }
-.login-wallet-desc{
-	margin-left: 13px;
+.login-wallet-desc {
+  margin-left: 13px;
 }
-.login-eostock img{
-	width: 35px
+.login-eostock img {
+  width: 35px;
 }
-.login-wallet-content{
-	display: flex;
+.login-wallet-content {
+  display: flex;
 }
 
 /* css loader */
-.loader-popup-container{
-	position: absolute;
-	top: 0;
-	left: 0;
-	background: rgba(255,255,255,0.8);
-	width: 100%;
-	height: 100%;
-	z-index: 100;
+.loader-popup-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(255, 255, 255, 0.8);
+  width: 100%;
+  height: 100%;
+  z-index: 100;
 }
-.loader-popup-container .lds-ellipsis{
-	transform: translate(-50%, -50%);
-	top: 50%;
-    left: 50%;
-    margin-right: -50%;
+.loader-popup-container .lds-ellipsis {
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
 }
 .lds-ellipsis {
   display: inline-block;
@@ -185,14 +194,13 @@
 
 /* end of css loader */
 
-
-@media only screen and (max-width: 600px)  {
-	.popup-container{
-		width: 90%;
-	}
-	.login-eostock .login-wallet-logo{
-		margin-top: 10px;
-	}
+@media only screen and (max-width: 600px) {
+  .popup-container {
+    width: 90%;
+  }
+  .login-eostock .login-wallet-logo {
+    margin-top: 10px;
+  }
 }
 
 @media only screen and (max-width: 415px) {
@@ -207,10 +215,10 @@
 }
 
 @media only screen and (max-width: 375px) {
-	.popup-container{
-		width: 98%;
+  .popup-container {
+    width: 98%;
   }
-  
+
   .login-wallet {
     padding: 5px 0 5px 5px;
   }
@@ -223,5 +231,3 @@
     margin-left: 3px;
   }
 }
-
-
