@@ -332,9 +332,10 @@ export class LoginEOSService {
     const accountName = this.WINDOW.localStorage.getItem("ual-wax:autologin");
     let user;
     try {
-      this.accountName = JSON.parse(accountName)['userAccount'];
+      const acc = JSON.parse(accountName);
+      this.accountName = acc['userAccount'];
       this.options = { authorization: [`${this.accountName}@active`] };
-      this.accountInfo['publicKey'] = this.accountName.pubKeys;
+      this.accountInfo['publicKey'] = acc['pubKeys'][0];
 
       const wax: any = new waxjs.WaxJS(this.config.httpEndpoint, undefined, undefined, false);
       
