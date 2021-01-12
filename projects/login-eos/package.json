@@ -1,17 +1,17 @@
 {
   "name": "@cryptolions/ulm-eosio",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "peerDependencies": {
     "@angular/common": "^7.1.0",
     "@angular/core": "^7.1.0"
   },
   "dependencies": {
     "@babel/runtime": "^7.4.5",
-    "@eosdacio/ual-wax": "^1.4.0",
+    "@eosdacio/ual-wax": "^1.4.3",
     "@protonprotocol/proton-web-sdk": "^2.6.3",
     "@scatterjs/core": "^2.7.53",
     "@scatterjs/eosjs2": "^1.5.35",
-    "@waxio/waxjs": "0.0.11",
+    "@waxio/waxjs": "0.0.14",
     "anchor-link": "^2.1.2",
     "anchor-link-browser-transport": "^2.1.1",
     "eosjs": "^20.0.0",
